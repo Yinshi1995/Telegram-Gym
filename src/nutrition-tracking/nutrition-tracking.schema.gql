@@ -1,0 +1,25 @@
+type NutritionTracking {
+  tracking_id: Int!
+  user_id: Int
+  date: DateTime
+  consumed_calories: Int
+  recommended_calories: Int
+  Users: User
+}
+
+input NutritionTrackingInput {
+  tracking_id: Int!
+  user_id: Int
+  date: DateTime
+  consumed_calories: Int
+  recommended_calories: Int
+}
+
+type Query {
+  nutritionTracking(tracking_id: Int!): NutritionTracking
+  allNutritionTracking: [NutritionTracking]
+}
+
+type Mutation {
+  createNutritionTracking(input: NutritionTrackingInput): NutritionTracking
+}

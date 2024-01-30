@@ -1,0 +1,25 @@
+type Subscription {
+  subscription_id: Int!
+  user_id: Int
+  start_date: DateTime
+  end_date: DateTime
+  status: String
+  Users: User
+}
+
+input SubscriptionInput {
+  subscription_id: Int!
+  user_id: Int
+  start_date: DateTime
+  end_date: DateTime
+  status: String
+}
+
+type Query {
+  subscription(subscription_id: Int!): Subscription
+  allSubscriptions: [Subscription]
+}
+
+type Mutation {
+  createSubscription(input: SubscriptionInput): Subscription
+}

@@ -1,0 +1,27 @@
+# workout-type.schema.gql
+
+type WorkoutType {
+  type_id: Int!
+  user_id: Int
+  type_name: String
+  body_part: body_part_enum
+  Exercise: [Exercise]
+  TrainingSessions: [TrainingSession]
+  Users: User
+}
+
+input WorkoutTypeInput {
+  type_id: Int!
+  user_id: Int
+  type_name: String
+  body_part: body_part_enum
+}
+
+type Query {
+  workoutType(type_id: Int!): WorkoutType
+  allWorkoutTypes: [WorkoutType]
+}
+
+type Mutation {
+  createWorkoutType(input: WorkoutTypeInput): WorkoutType
+}

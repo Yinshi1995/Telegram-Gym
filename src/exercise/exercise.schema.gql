@@ -1,0 +1,24 @@
+type Exercise {
+  exercise_id: Int!
+  type_id: Int
+  exercise_name: String
+  description: String
+  WorkoutType: WorkoutType
+  TrainingSessions: [TrainingSession]
+}
+
+input ExerciseInput {
+  exercise_id: Int!
+  type_id: Int
+  exercise_name: String
+  description: String
+}
+
+type Query {
+  exercise(exercise_id: Int!): Exercise
+  allExercises: [Exercise]
+}
+
+type Mutation {
+  createExercise(input: ExerciseInput): Exercise
+}

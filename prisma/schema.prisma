@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  telegram_id       Int                 @id(map: "Users_pkey") @default(autoincrement())
+  phone_number      String              @db.VarChar(15)
+  full_name         String?
+  username          String
+  weight            Decimal?
+  height            Decimal?
+  birth_date        DateTime?           @db.Date
+  is_admin          Boolean?
+  NutritionTracking NutritionTracking[]
+  Subscriptions     Subscription[]
+  TrainingSessions  TrainingSession[]
+  WorkoutTypes      WorkoutType[]
+}
+
+model Subscription {
+  subscription_id Int      @id(map: "Subscriptions_pkey") @default(autoincrement())
+  user_id         Int
+  start_date      DateTime
+  end_date        DateTime
+  status          String   @default("inactive")
+  Users           User     @relation(fields: [user_id], references: [telegram_id], map: "Subscriptions_user_id_fkey")
+}
+
+model WorkoutType {
+  type_id          Int               @id(map: "WorkoutTypes_pkey") @default(autoincrement())
+  user_id          Int
+  type_name        String
+  body_part        body_part_enum
+  Exercise         Exercise[]
+  TrainingSessions TrainingSession[]
+  Users            User              @relation(fields: [user_id], references: [telegram_id], map: "WorkoutTypes_user_id_fkey")
+}
+
+model TrainingSession {
+  session_id      Int         @id(map: "TrainingSessions_pkey") @default(autoincrement())
+  user_id         Int
+  date            DateTime
+  workout_type_id Int
+  exercise_id     Int
+  sets            Int
+  reps            Int
+  notes           String?
+  Exercises       Exercise    @relation(fields: [exercise_id], references: [exercise_id], map: "TrainingSessions_exercise_id_fkey")
+  Users           User        @relation(fields: [user_id], references: [telegram_id], map: "TrainingSessions_user_id_fkey")
+  WorkoutTypes    WorkoutType @relation(fields: [workout_type_id], references: [type_id], map: "TrainingSessions_workout_type_id_fkey")
+}
+
+model NutritionTracking {
+  tracking_id          Int      @id @default(autoincrement())
+  user_id              Int
+  date                 DateTime
+  consumed_calories    Int
+  recommended_calories Int
+  Users                User     @relation(fields: [user_id], references: [telegram_id])
+}
+
+model Exercise {
+  exercise_id      Int               @id(map: "Exercises_pkey") @default(autoincrement())
+  type_id          Int
+  exercise_name    String
+  description      String
+  WorkoutType      WorkoutType       @relation(fields: [type_id], references: [type_id], map: "Exercises_type_id_fkey")
+  TrainingSessions TrainingSession[]
+}
+
+enum body_part_enum {
+  Back
+  Chest
+  Core
+  Legs
+  Arms
+  Shoulders
+}

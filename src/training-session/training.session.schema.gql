@@ -1,0 +1,33 @@
+type TrainingSession {
+  session_id: Int!
+  user_id: Int
+  date: DateTime
+  workout_type_id: Int
+  exercise_id: Int
+  sets: Int
+  reps: Int
+  notes: String
+  Exercise: Exercise
+  Users: User
+  WorkoutTypes: WorkoutType
+}
+
+input TrainingSessionInput {
+  session_id: Int!
+  user_id: Int
+  date: DateTime
+  workout_type_id: Int
+  exercise_id: Int
+  sets: Int
+  reps: Int
+  notes: String
+}
+
+type Query {
+  trainingSession(session_id: Int!): TrainingSession
+  allTrainingSessions: [TrainingSession]
+}
+
+type Mutation {
+  createTrainingSession(input: TrainingSessionInput): TrainingSession
+}

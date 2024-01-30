@@ -1,0 +1,52 @@
+enum body_part_enum {
+  Back
+  Chest
+  Core
+  Legs
+  Arms
+  Shoulders
+}
+
+scalar Decimal
+scalar DateTime
+
+type User {
+  telegram_id: Int!
+  phone_number: String
+  birth_date: DateTime
+  is_admin: Boolean
+  full_name: String
+  username: String!
+  password: String!
+  weight: Decimal
+  height: Decimal
+  NutritionTracking: [NutritionTracking]
+  Subscriptions: [Subscription]
+  TrainingSessions: [TrainingSession]
+  WorkoutTypes: [WorkoutType]
+}
+
+input UserInput {
+  telegram_id: Int!
+  phone_number: String
+  full_name: String
+  username: String!
+  password: String!
+  weight: Decimal
+  height: Decimal
+  NutritionTracking: NutritionTrackingInput
+  Subscriptions: SubscriptionInput
+  TrainingSessions: TrainingSessionInput
+  WorkoutTypes: WorkoutTypeInput
+}
+
+type Query {
+  user(telegram_id: Int!): User
+  allUsers: [User]
+}
+
+type Mutation {
+  createUser(input: UserInput): User
+  updateUser(telegram_id: Int!, input: UserInput): User
+  deleteUser(telegram_id: Int!): User
+}
