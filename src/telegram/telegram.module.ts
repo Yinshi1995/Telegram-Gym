@@ -7,6 +7,7 @@ import { SubscriptionService } from "src/subscription/subscription.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserService } from "src/user/user.service";
 import { WizardService } from "./wizard.service";
+import { RegistrationService } from "./registration.service";
 
 @Module({
   imports: [ConfigModule],
@@ -17,6 +18,7 @@ import { WizardService } from "./wizard.service";
     PrismaService,
     UserService,
     WizardService,
+    RegistrationService,
   ],
   controllers: [TelegramController],
 })

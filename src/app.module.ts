@@ -9,6 +9,7 @@ import { NutritionTrackingModule } from "./nutrition-tracking/nutrition-tracking
 import { ExerciseModule } from "./exercise/exercise.module";
 import { TelegramModule } from "./telegram/telegram.module";
 import { ConfigModule } from "@nestjs/config";
+import { CommonService } from "./common/common.service";
 
 @Module({
   imports: [
@@ -26,5 +27,6 @@ import { ConfigModule } from "@nestjs/config";
     TelegramModule,
     ConfigModule.forRoot(),
   ],
+  providers: [CommonService],
 })
 export class AppModule {}
