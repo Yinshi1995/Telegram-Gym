@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { UserService } from "src/user/user.service";
 import { Markup } from "telegraf";
+import { UserService } from "src/user/user.service";
 import { TelegramService } from "./telegram.service";
 import { CommonService } from "src/common/common.service";
 import { RegUserData } from "./reg-user-data.interface";

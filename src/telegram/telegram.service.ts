@@ -2,19 +2,19 @@ import { Injectable } from "@nestjs/common";
 import { SubscriptionService } from "src/subscription/subscription.service";
 import { UserService } from "src/user/user.service";
 import { Markup, Context } from "telegraf";
-import { WizardService } from "./wizard.service";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class TelegramService {
   constructor(
     private readonly subscriptionService: SubscriptionService,
     private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) {}
 
   start = async (ctx: Context) => {
-    const url: string = "https://angular-telegram-bot.vercel.app/";
+    const url: string = this.configService.get("MINI_APP_URL");
     let userId = ctx.message.from.id;
-    let webAppUrlWithUserId = `${url}qrcode?user_id=${userId}`;
 
     let userExists: boolean = await this.userService.userExists(userId);
 
@@ -30,17 +30,13 @@ export class TelegramService {
       `Добро пожаловать! Выберите нужный раздел:`,
       Markup.keyboard([
         [
-          Markup.button.webApp("QR код", webAppUrlWithUserId),
+          Markup.button.webApp("QR код (User)", `${url}/qrcode`),
           Markup.button.webApp("Абонемент", url),
         ],
         [
-          Markup.button.webApp("Статистика по посещениям", url), // Добавлено для функционала "Visit Intensity Statistics"
-          Markup.button.webApp("Программа тренировок", url), // Добавлено для функционала "Workout Program Section"
-        ],
-        [
-          Markup.button.webApp("История тренировок", url), // Добавлено для функционала "Training History"
-          Markup.button.webApp("Отслеживание калорий", url), // Добавлено для функционала "Calorie Tracking"
-        ],
+          Markup.button.webApp("QR код scan (Admin)", `${url}/scan`),
+          Markup.button.webApp("Абонемент", url),
+        ]
       ]).resize(),
     );
   };
