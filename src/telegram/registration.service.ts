@@ -3,10 +3,11 @@ import { UserService } from "src/user/user.service";
 import { Markup } from "telegraf";
 import { TelegramService } from "./telegram.service";
 import { CommonService } from "src/common/common.service";
+import { RegUserData } from "./reg-user-data.interface";
 
 @Injectable()
 export class RegistrationService {
-  user = {};
+  private user: RegUserData;
 
   constructor(
     private readonly telegramService: TelegramService,
@@ -36,7 +37,7 @@ export class RegistrationService {
       return;
     }
 
-    this.user["phone_number"] = phoneNumber;
+    this.user.phone_number = phoneNumber;
 
     await ctx.reply("Как к вам обращаться?");
     return ctx.wizard.next();
@@ -50,10 +51,10 @@ export class RegistrationService {
       return;
     }
 
-    this.user["full_name"] = fullName;
+    this.user.full_name = fullName;
 
     const dateString = ctx.message.text.replace(" ", "-");
-    this.user["birth_date"] =
+    this.user.birth_date =
       dateString && this.commonService.isValidDateString(dateString)
         ? new Date(dateString)
         : null;
@@ -68,12 +69,12 @@ export class RegistrationService {
 
   wizard_height = async (ctx) => {
     const height = ctx.message.text;
-    this.user["birth_date"] =
+    this.user.birth_date =
       height && this.commonService.isValidDateString(height)
         ? Number(height)
         : height === "-"
         ? null
-        : this.user["birth_date"];
+        : this.user.birth_date;
 
     if (
       height &&
@@ -83,7 +84,7 @@ export class RegistrationService {
       return;
     }
 
-    this.user["height"] = height === "-" ? null : Number(height);
+    this.user.height = height === "-" ? null : Number(height);
 
     await ctx.reply(
       "Если хотите, введите свой вес (кг) или -, если не считаете нужным.",
@@ -93,7 +94,7 @@ export class RegistrationService {
 
   wizard_weight = async (ctx) => {
     const weight = ctx.message.text;
-    this.user["weight"] =
+    this.user.weight =
       weight &&
       !isNaN(Number(weight)) &&
       Number(weight) > 35 &&
@@ -137,9 +138,9 @@ export class RegistrationService {
       return;
     }
 
-    this.user["telegram_id"] = ctx.from.id;
-    this.user["username"] = ctx.from.username;
-    this.user["is_admin"] = false;
+    this.user.telegram_id = ctx.from.id;
+    this.user.username = ctx.from.username;
+    this.user.is_admin = false;
 
     await this.userService.create(this.user);
 
