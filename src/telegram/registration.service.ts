@@ -1,19 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { Markup } from "telegraf";
+import { CommonService } from "src/common/common.service";
 import { UserService } from "src/user/user.service";
 import { TelegramService } from "./telegram.service";
-import { CommonService } from "src/common/common.service";
 import { RegUserData } from "./reg-user-data.interface";
 
 @Injectable()
 export class RegistrationService {
-  private user: RegUserData;
+  private user: RegUserData = new Object() as RegUserData;
 
   constructor(
     private readonly telegramService: TelegramService,
     private readonly userService: UserService,
     private readonly commonService: CommonService,
-  ) {}
+  ) { }
 
   wizard_init = async (ctx) => {
     await ctx.reply(
@@ -26,11 +26,14 @@ export class RegistrationService {
   };
 
   wizard_phone = async (ctx) => {
-    const phoneNumber =
-      ctx.message.contact.phone_number ||
-      this.commonService.isValidUkrainianPhoneNumber(ctx.message.text)
-        ? ctx.message.text
-        : null;
+    if (!ctx.message.contact || !ctx.message.contact.phone_number) {
+      await ctx.reply("Введите корректный номер телефона.");
+      return;
+    }
+
+    const phoneNumber = this.commonService.isValidUkrainianPhoneNumber(
+      ctx.message.contact.phone_number,
+    ) || null;
 
     if (!phoneNumber) {
       await ctx.reply("Введите корректный номер телефона.");
@@ -39,11 +42,11 @@ export class RegistrationService {
 
     this.user.phone_number = phoneNumber;
 
-    await ctx.reply("Как к вам обращаться?");
+    await ctx.reply("Как к вам обращаться?", Markup.removeKeyboard());
     return ctx.wizard.next();
   };
 
-  wizard_birth_date = async (ctx) => {
+  wizard_name = async (ctx) => {
     const fullName = ctx.message.text;
 
     if (!fullName || !this.commonService.isValidFullName(fullName)) {
@@ -53,12 +56,6 @@ export class RegistrationService {
 
     this.user.full_name = fullName;
 
-    const dateString = ctx.message.text.replace(" ", "-");
-    this.user.birth_date =
-      dateString && this.commonService.isValidDateString(dateString)
-        ? new Date(dateString)
-        : null;
-
     await ctx.reply(
       `Если хотите, введите свою дату рождения.
            Введите 3 цифры: год, месяц, день или -, если не считаете нужным.
@@ -67,14 +64,35 @@ export class RegistrationService {
     return ctx.wizard.next();
   };
 
+  wizard_birth_date = async (ctx) => {
+    const birthDate = ctx.message.text;
+
+    if (
+      birthDate &&
+      !this.commonService.isValidDateString(birthDate.replace(/ /g, "-"))
+    ) {
+      await ctx.reply("Пожалуйста, введите корректную дату рождения.");
+      return;
+    }
+
+    this.user.birth_date = birthDate
+      ? new Date(birthDate.replace(/ /g, "-"))
+      : null;
+
+    await ctx.reply(
+      "Введите свой рост (в сантиметрах) или -, если не считаете нужным.",
+    );
+    return ctx.wizard.next();
+  };
+
   wizard_height = async (ctx) => {
     const height = ctx.message.text;
-    this.user.birth_date =
-      height && this.commonService.isValidDateString(height)
+    this.user.height =
+      height && this.commonService.isInteger(height)
         ? Number(height)
         : height === "-"
         ? null
-        : this.user.birth_date;
+        : this.user.height;
 
     if (
       height &&
@@ -112,32 +130,10 @@ export class RegistrationService {
       return;
     }
 
-    await ctx.reply(
-      "Если хотите, введите свой вес (кг) или -, если не считаете нужным.",
-    );
-    return ctx.wizard.next();
+    await this.endConnection(ctx);
   };
 
-  wizard_end = async (ctx) => {
-    const weight = ctx.message.text;
-    this.user["weight"] =
-      weight &&
-      !isNaN(Number(weight)) &&
-      Number(weight) > 35 &&
-      Number(weight) < 250
-        ? Number(weight)
-        : weight === "-"
-        ? null
-        : this.user["weight"];
-
-    if (
-      weight &&
-      (isNaN(Number(weight)) || !(Number(weight) > 35 && Number(weight) < 250))
-    ) {
-      await ctx.reply("Пожалуйста, введите корректый вес.");
-      return;
-    }
-
+  private async endConnection(ctx) {
     this.user.telegram_id = ctx.from.id;
     this.user.username = ctx.from.username;
     this.user.is_admin = false;
@@ -146,5 +142,5 @@ export class RegistrationService {
 
     await this.telegramService.start(ctx);
     return await ctx.scene.leave();
-  };
+  }
 }

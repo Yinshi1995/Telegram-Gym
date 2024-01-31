@@ -12,9 +12,14 @@ export class CommonService {
     return words.length >= 2;
   }
 
-  isValidUkrainianPhoneNumber(phoneNumber: string) {
+  isValidUkrainianPhoneNumber(phoneNumber: string): string | null {
     const ukrainianPhoneNumberPattern = /^(\+38)?\d{10}$/;
-    const numericPhoneNumber = phoneNumber.replace(/\D/g, "");
-    return ukrainianPhoneNumberPattern.test(numericPhoneNumber);
+    // const numericPhoneNumber = phoneNumber.replace(/\D/g, "");
+    let test = ukrainianPhoneNumberPattern.test(phoneNumber);
+    return test ? phoneNumber : null;
+  }
+
+  isInteger(value: string): boolean {
+    return !isNaN(parseInt(value)) && Number.isInteger(parseFloat(value));
   }
 }

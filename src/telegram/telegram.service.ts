@@ -30,13 +30,16 @@ export class TelegramService {
       `Добро пожаловать! Выберите нужный раздел:`,
       Markup.keyboard([
         [
-          Markup.button.webApp("QR код (User)", `${url}/qrcode`),
+          Markup.button.webApp(
+            "QR код (User)",
+            `${url}/qrcode?user_id=${userId}`,
+          ),
           Markup.button.webApp("Абонемент", url),
         ],
         [
-          Markup.button.webApp("QR код scan (Admin)", `${url}/scan`),
+          Markup.button.webApp("QR код scan (Admin)", `${url}/scanner`),
           Markup.button.webApp("Абонемент", url),
-        ]
+        ],
       ]).resize(),
     );
   };
