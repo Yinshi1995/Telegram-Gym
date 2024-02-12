@@ -15,6 +15,11 @@ export class SubscriptionResolver {
     return this.subscriptionService.findAll();
   }
 
+  @Query("subscriptionByUserId")
+  async getSubscriptionsByUserId(@Args("user_id") userId: number) {
+    return this.subscriptionService.findOneByUserId(userId);
+  }
+
   @Mutation("createSubscription")
   async createSubscription(@Args("input") input: any) {
     return this.subscriptionService.create(input);

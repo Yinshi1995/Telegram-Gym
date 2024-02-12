@@ -7,6 +7,11 @@ type Subscription {
   Users: User
 }
 
+type FilteredSubscriptions {
+  active: Subscription
+  inactive: [Subscription]
+}
+
 input SubscriptionInput {
   subscription_id: Int!
   user_id: Int
@@ -17,6 +22,7 @@ input SubscriptionInput {
 
 type Query {
   subscription(subscription_id: Int!): Subscription
+  subscriptionByUserId(user_id: Int!): FilteredSubscriptions
   allSubscriptions: [Subscription]
 }
 

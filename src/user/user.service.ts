@@ -10,6 +10,9 @@ export class UserService {
       where: {
         telegram_id: telegramId,
       },
+      include: {
+        Subscriptions: true,
+      }
     });
   }
 

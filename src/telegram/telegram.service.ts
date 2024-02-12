@@ -38,7 +38,7 @@ export class TelegramService {
         ],
         [
           Markup.button.webApp("QR код scan (Admin)", `${url}/scanner`),
-          Markup.button.webApp("Абонемент", url),
+          Markup.button.webApp("User", `${url}/user?user_id=123456`), // user_id for test purposes
         ],
       ]).resize(),
     );
